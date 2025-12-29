@@ -39,6 +39,30 @@ public class UserController : Controller
         }
     }
 
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        try
+        {
+            var result = await _service.GetUserPaginated(page, pageSize);
+            return Ok(new
+            {
+                success = true,
+                data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = $"Unexpected error: {ex.Message}"
+            });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
