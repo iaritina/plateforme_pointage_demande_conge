@@ -19,6 +19,8 @@ public partial class MyDbContext : DbContext
     public DbSet<SoldeConge> SoldeConges { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Registration> Registrations { get; set; }
+    
+    public DbSet<Schedule> Schedules { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
