@@ -19,6 +19,8 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 builder.Services.AddScoped<SoldeCongeService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RegistrationService>();
+builder.Services.AddScoped<WorkSummaryService>();
+builder.Services.AddScoped<MonitoringService>();
 
 // Configurer CORS pour le frontend Next.js
 builder.Services.AddCors(options =>
