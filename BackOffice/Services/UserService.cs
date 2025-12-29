@@ -1,5 +1,6 @@
 ﻿using BackOffice.Context;
 using BackOffice.Models;
+using BackOffice.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -17,6 +18,27 @@ public class UserService
     public async Task<List<User>> GetAllUserAsync()
     {
         return await _context.Users.ToListAsync();
+    }
+
+    public async Task<PagedResultViewModel<User>> GetUserPaginated(int page, int pageSize)
+    {
+        var query = _context.Users.AsNoTracking();
+
+        var total = await query.CountAsync();
+
+        var users = await query
+            .OrderBy(u => u.LastName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResultViewModel<User>
+        {
+            Items = users,
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = total
+        };
     }
 
     public async Task<User> CreateUser(User user)
