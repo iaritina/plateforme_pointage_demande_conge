@@ -20,7 +20,7 @@ public class User
     [Required]
     public string Phone { get; set; }
         
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     [Required]
     public DateTime HiringDate { get; set; }

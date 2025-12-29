@@ -68,13 +68,14 @@ public class UserController : Controller
     {
         try
         {
-            // Retire Password de la validation du modèle
-            ModelState.Remove("Password");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            if (string.IsNullOrEmpty(user.Password))
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.LastName);
+            }
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.LastName);
             var createdUser = await _service.CreateUser(user);
             return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id }, createdUser);
         }
@@ -83,6 +84,7 @@ public class UserController : Controller
             return StatusCode(500, $"Erreur lors de la création de l'utilisateur : {ex.Message}");
         }
     }
+
 
 
 }
