@@ -44,13 +44,29 @@ public class UserService
     public async Task<User> CreateUser(User user)
     {
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.LastName);
-    
-        // Valeurs par défaut si non fournies
+        
         if (user.HiringDate == default) user.HiringDate = DateTime.UtcNow;
         if (string.IsNullOrEmpty(user.Role)) user.Role = "User";
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+        
+        var schedules = new List<Schedule>();
+        
+        for (int day = 1; day <= 5; day++)
+        {
+            schedules.Add(new Schedule { Day = day, Start = "08:00", End = "12:00", Working = true, UserId = user.Id });
+            schedules.Add(new Schedule { Day = day, Start = "12:00", End = "13:00", Working = false, UserId = user.Id }); 
+            schedules.Add(new Schedule { Day = day, Start = "13:00", End = "17:00", Working = true, UserId = user.Id });
+        }
+            
+        schedules.Add(new Schedule { Day = 6, Start = "00:00", End = "23:59", Working = false, UserId = user.Id });
+        schedules.Add(new Schedule { Day = 7, Start = "00:00", End = "23:59", Working = false, UserId = user.Id });
+            
+        _context.Schedules.AddRange(schedules);
+        await _context.SaveChangesAsync();
+        
+        
         return user;
     }
 
