@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BackOffice.Models;
 
+[Table("User")]
 public class User
 {
     public int Id { get; set; }
@@ -26,7 +28,7 @@ public class User
     [Required, MaxLength(50)]
     public string Role { get; set; } = "User";
         
-    // public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+    public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
     public string GetFullName()
     {
         return $"{FirstName} {LastName}";
