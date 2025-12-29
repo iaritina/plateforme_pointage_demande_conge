@@ -22,6 +22,9 @@ public class User
 
     [Required]
     public DateTime HiringDate { get; set; }
+    
+    [Required, MaxLength(50)]
+    public string Role { get; set; } = "User";
         
     // public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
     public string GetFullName()
