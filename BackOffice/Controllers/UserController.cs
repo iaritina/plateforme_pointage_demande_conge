@@ -71,10 +71,6 @@ public class UserController : Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             
-            if (string.IsNullOrEmpty(user.Password))
-            {
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.LastName);
-            }
 
             var createdUser = await _service.CreateUser(user);
             return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id }, createdUser);
