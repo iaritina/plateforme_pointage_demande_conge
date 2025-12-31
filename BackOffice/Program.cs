@@ -1,6 +1,9 @@
 using BackOffice.Context;
 using BackOffice.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,30 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<WorkSummaryService>();
 builder.Services.AddScoped<MonitoringService>();
+builder.Services.AddScoped<AuthService>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            ),
+
+            ClockSkew = TimeSpan.Zero // évite les problèmes UTC
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Configurer CORS pour le frontend Next.js
 builder.Services.AddCors(options =>
@@ -55,6 +82,7 @@ app.UseHttpsRedirection();
 // Utiliser CORS avant l'autorisation et les endpoints
 app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
