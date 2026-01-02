@@ -36,4 +36,33 @@ public class WorkSummaryController : Controller
         }
     }
 
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetUserSummary(
+        int userId,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var summary = await _service.GetUserWorkSummary(userId, startDate, endDate);
+            if(summary == null) return NotFound("Utilisateur non trouvé");
+
+            return Ok(new
+                {
+                    success = true,
+                    data = summary
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = $"Erreur: {ex.Message}"
+            });
+        }
+        
+    }
+
 }
