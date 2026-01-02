@@ -12,7 +12,7 @@ public class SoldeCongeService
     {
         _context = context;
     }
-    
+
     public async Task<(List<SoldeConge> Items, int TotalCount)>
         GetAllPagedAsync(int page, int pageSize)
     {
@@ -31,10 +31,11 @@ public class SoldeCongeService
         return (items, totalCount);
     }
 
-    public async Task<List<SoldeConge>> GetAllAsync(int page, int pageSize)
+    public async Task<List<User>> FetchEmployeeWhoDoNotHaveSolde()
     {
-        return await _context.SoldeConges
-            .Include(s => s.Employe)
+        return await _context.Users
+            .Where(u => !_context.SoldeConges
+                .Any(sc => sc.IdEmploye == u.Id))
             .ToListAsync();
     }
 
