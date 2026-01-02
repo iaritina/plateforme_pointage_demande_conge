@@ -37,6 +37,17 @@ public class SoldeCongeController : Controller
         });
     }
     
+    [HttpGet("GetEmps")]
+    public async Task<IActionResult> GetAllEmpWhoDoNotHaveSolde()
+    {
+        var emps = await _service.FetchEmployeeWhoDoNotHaveSolde();
+
+        return Ok(new
+        {
+           emps
+        });
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] SoldeCongeDTO dto)
     {
@@ -51,4 +62,12 @@ public class SoldeCongeController : Controller
 
         return CreatedAtAction(nameof(GetAll), new { page = 1 }, dto);
     }
+
+    [HttpGet("{empId:int}")]
+    public async Task<IActionResult> GetByEmpId(int empId)
+    {
+        var resp = await _service.GetByEmployeeAsync(empId);
+        return Ok(resp);
+    }
+    
 }
