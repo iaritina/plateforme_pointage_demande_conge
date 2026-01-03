@@ -21,6 +21,7 @@ public partial class MyDbContext : DbContext
     public DbSet<Registration> Registrations { get; set; }
     
     public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<DemandeConge>  DemandeConges { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
