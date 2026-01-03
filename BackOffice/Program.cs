@@ -25,6 +25,7 @@ builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<WorkSummaryService>();
 builder.Services.AddScoped<MonitoringService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DemandeCongeService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
