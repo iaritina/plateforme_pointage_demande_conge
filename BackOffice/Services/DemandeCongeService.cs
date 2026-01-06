@@ -101,4 +101,13 @@ public class DemandeCongeService
 
         return (items, totalCount);
     }
+    
+    public async Task<List<DemandeConge>> GetDemandesAsync(int userId)
+    {
+        return await _context.DemandeConges
+            .Where(d => d.UserId == userId)
+            .OrderByDescending(d => d.IdDmd)
+            .ToListAsync();
+    }
+
 }

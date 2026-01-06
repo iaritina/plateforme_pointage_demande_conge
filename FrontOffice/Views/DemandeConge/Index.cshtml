@@ -1,0 +1,60 @@
+﻿@using Shared.models
+@model List<Shared.models.DemandeConge>
+
+@{
+    ViewData["Title"] = "Mes demandes de congé";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Mes demandes de congé</h2>
+
+    <a asp-action="Creer" class="btn btn-primary">
+        + Créer une demande
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Aucune demande de congé trouvée.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Motif</th>
+            <th>Nombre de jours</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.DateDebut.ToString("dd/MM/yyyy")</td>
+                <td>@d.DateFin.ToString("dd/MM/yyyy")</td>
+                <td>@d.Motif</td>
+                <td>@d.NombreJour</td>
+                <td>
+                    @switch (d.Status)
+                    {
+                        case StatusEnum.pending:
+                            <span class="badge bg-warning text-dark">En attente</span>
+                            break;
+                        case StatusEnum.ok:
+                            <span class="badge bg-success">Acceptée</span>
+                            break;
+                        case StatusEnum.ko:
+                            <span class="badge bg-danger">Refusée</span>
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -1,9 +1,19 @@
+using BackOffice.Services;
+using Microsoft.EntityFrameworkCore;
+using Shared.Context;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<MyDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<DemandeCongeService>();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
