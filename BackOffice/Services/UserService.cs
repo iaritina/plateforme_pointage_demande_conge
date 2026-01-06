@@ -2,6 +2,7 @@
 using BackOffice.Models;
 using BackOffice.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Shared.models;
 
 
 namespace BackOffice.Services;

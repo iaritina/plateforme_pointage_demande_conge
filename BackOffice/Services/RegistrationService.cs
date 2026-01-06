@@ -3,6 +3,7 @@ using BackOffice.Hubs;
 using BackOffice.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Shared.models;
 
 namespace BackOffice.Services;
 
