@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BackOffice.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.models;
 
 namespace BackOffice.Context;
 

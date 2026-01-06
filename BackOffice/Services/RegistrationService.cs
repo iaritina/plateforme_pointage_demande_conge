@@ -1,6 +1,7 @@
 ﻿using BackOffice.Context;
 using BackOffice.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.models;
 
 namespace BackOffice.Services;
 
