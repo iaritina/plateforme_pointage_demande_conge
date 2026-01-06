@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackOffice", "BackOffice\BackOffice.csproj", "{6594CD8A-2E9C-4CB5-A899-7EA3D06CE93C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontOffice", "FrontOffice\FrontOffice.csproj", "{B27C9327-5D9E-4E15-B79E-DD442A3E34FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{6594CD8A-2E9C-4CB5-A899-7EA3D06CE93C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6594CD8A-2E9C-4CB5-A899-7EA3D06CE93C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6594CD8A-2E9C-4CB5-A899-7EA3D06CE93C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B27C9327-5D9E-4E15-B79E-DD442A3E34FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B27C9327-5D9E-4E15-B79E-DD442A3E34FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B27C9327-5D9E-4E15-B79E-DD442A3E34FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B27C9327-5D9E-4E15-B79E-DD442A3E34FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
