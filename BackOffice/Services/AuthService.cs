@@ -1,10 +1,9 @@
-﻿using BackOffice.Context;
-using BackOffice.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Shared.Context;
 using Shared.models;
 
 namespace BackOffice.Services;

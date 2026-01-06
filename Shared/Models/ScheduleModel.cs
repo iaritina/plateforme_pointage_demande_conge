@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Shared.models;
 
-
-namespace BackOffice.Models;
+namespace Shared.models;
 
 public class Schedule
 {

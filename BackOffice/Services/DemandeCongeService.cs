@@ -1,6 +1,6 @@
-﻿using BackOffice.Context;
-using BackOffice.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared.Context;
+using Shared.models;
 
 namespace BackOffice.Services;
 

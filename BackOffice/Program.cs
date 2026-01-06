@@ -1,10 +1,10 @@
-using BackOffice.Context;
 using BackOffice.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BackOffice.Hubs;
+using Shared.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
