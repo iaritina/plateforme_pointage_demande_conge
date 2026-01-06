@@ -94,6 +94,7 @@ public class DemandeCongeService
 
         var items = await query
             .OrderByDescending(d => d.IdDmd)
+            .Include(d => d.User)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
