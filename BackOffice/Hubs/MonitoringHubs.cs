@@ -4,5 +4,5 @@ namespace BackOffice.Hubs;
 
 public class MonitoringHubs : Hub
 {
-    
+   
 }

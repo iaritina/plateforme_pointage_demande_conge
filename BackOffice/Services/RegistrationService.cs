@@ -1,5 +1,7 @@
 ﻿using BackOffice.Context;
+using BackOffice.Hubs;
 using BackOffice.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackOffice.Services;
@@ -7,10 +9,12 @@ namespace BackOffice.Services;
 public class RegistrationService
 {
     private readonly MyDbContext _context;
+    private readonly IHubContext<MonitoringHubs> _hubContext;
 
-    public RegistrationService(MyDbContext context)
+    public RegistrationService(MyDbContext context,  IHubContext<MonitoringHubs> hubContext)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
     public async Task Create(int userId, RegistrationType status)
@@ -27,6 +31,16 @@ public class RegistrationService
         
         _context.Registrations.Add(registration);
         await _context.SaveChangesAsync();
-        
+
+        await _hubContext.Clients.All.SendAsync(
+            "MonitoringUpdated",
+            new
+            {
+                UserId = userId,
+                Status = status,
+                Timestamp = registration.Timestamp
+            }
+        );
+
     }
 }
