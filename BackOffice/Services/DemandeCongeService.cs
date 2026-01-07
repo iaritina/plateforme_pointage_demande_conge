@@ -16,7 +16,7 @@ public class DemandeCongeService
     // CREATE demande
     public async Task<DemandeConge> CreerDemandeAsync(DemandeConge demande)
     {
-        demande.NombreJour = CalculerJoursOuvres(demande.DateDebut, demande.DateFin);
+        demande.NombreJour = CalculerJoursOuvres(demande);
         demande.Status = StatusEnum.pending;
 
         _context.DemandeConges.Add(demande);
@@ -69,19 +69,47 @@ public class DemandeCongeService
     }
 
     // Calcul jours ouvrés
-    private int CalculerJoursOuvres(DateTime debut, DateTime fin)
+    private decimal CalculerJoursOuvres(DemandeConge d)
     {
-        int jours = 0;
-        for (var date = debut.Date; date <= fin.Date; date = date.AddDays(1))
+        decimal total = 0;
+
+        // parcourt chaque date en ajoutant +1
+        for (var date = d.DateDebut.Date; date <= d.DateFin.Date; date = date.AddDays(1))
         {
-            if (date.DayOfWeek != DayOfWeek.Saturday &&
-                date.DayOfWeek != DayOfWeek.Sunday)
+            // Ignore samedi / dimanche
+            if (date.DayOfWeek == DayOfWeek.Saturday ||
+                date.DayOfWeek == DayOfWeek.Sunday)
+                continue;
+
+            // Jour unique
+            if (d.DateDebut.Date == d.DateFin.Date)
             {
-                jours++;
+                if (d.DebutApresMidi && !d.FinApresMidi)
+                    total += 0.5m;
+                else
+                    total += 1m;
+
+                break;
+            }
+
+            // Premier jour
+            if (date == d.DateDebut.Date)
+            {
+                total += d.DebutApresMidi ? 0.5m : 1m;
+            }
+            // Dernier jour
+            else if (date == d.DateFin.Date)
+            {
+                total += d.FinApresMidi ? 1m : 0.5m;
+            }
+            // Jours intermédiaires, les jours entre debut et fin
+            else
+            {
+                total += 1m;
             }
         }
 
-        return jours;
+        return total;
     }
 
     public async Task<(List<DemandeConge> Items, int TotalCount)>
@@ -101,7 +129,7 @@ public class DemandeCongeService
 
         return (items, totalCount);
     }
-    
+
     public async Task<List<DemandeConge>> GetDemandesAsync(int userId)
     {
         return await _context.DemandeConges
@@ -109,5 +137,4 @@ public class DemandeCongeService
             .OrderByDescending(d => d.IdDmd)
             .ToListAsync();
     }
-
 }

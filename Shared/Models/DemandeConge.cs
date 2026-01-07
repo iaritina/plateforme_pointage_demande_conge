@@ -13,7 +13,10 @@ public class DemandeConge
     public User User { get; set; }
 
     public DateTime DateDebut { get; set; }
+    public bool DebutApresMidi { get; set; } // false = matin, true = après-midi
     public DateTime DateFin { get; set; }
+    public bool FinApresMidi { get; set; } // false = matin, true = après-midi
+
 
     public string Motif { get; set; }
     public decimal NombreJour { get; set; }
