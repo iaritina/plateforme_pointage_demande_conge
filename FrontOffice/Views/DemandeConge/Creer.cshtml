@@ -9,16 +9,38 @@
 <form asp-action="Creer" method="post">
     @Html.AntiForgeryToken()
 
-    <div class="form-group">
-        <label asp-for="DateDebut"></label>
-        <input asp-for="DateDebut" class="form-control" />
-        <span asp-validation-for="DateDebut" class="text-danger"></span>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label asp-for="DateDebut"></label>
+                <input asp-for="DateDebut" class="form-control"/>
+                <span asp-validation-for="DateDebut" class="text-danger"></span>
+            </div>
+            
+        </div>
+        <div class="col-6">
+
+            <div class="form-group">
+                <label>Début</label>
+                <select asp-for="DebutApresMidi" class="form-control">
+                    <option value="false">Matin</option>
+                    <option value="true">Après-midi</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
         <label asp-for="DateFin"></label>
         <input asp-for="DateFin" class="form-control" />
         <span asp-validation-for="DateFin" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Fin</label>
+        <select asp-for="FinApresMidi" class="form-control">
+            <option value="false">Matin</option>
+            <option value="true">Après-midi</option>
+        </select>
     </div>
 
     <div class="form-group">

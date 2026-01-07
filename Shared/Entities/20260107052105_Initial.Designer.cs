@@ -9,11 +9,11 @@ using Shared.Context;
 
 #nullable disable
 
-namespace BackOffice.Entities
+namespace Shared.Entities
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20260103192622_migration_dmdConge")]
-    partial class migration_dmdConge
+    [Migration("20260107052105_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace BackOffice.Entities
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BackOffice.Models.DemandeConge", b =>
+            modelBuilder.Entity("Shared.models.DemandeConge", b =>
                 {
                     b.Property<int>("IdDmd")
                         .ValueGeneratedOnAdd()
@@ -38,6 +38,12 @@ namespace BackOffice.Entities
 
                     b.Property<DateTime>("DateFin")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DebutApresMidi")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FinApresMidi")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Motif")
                         .IsRequired()
@@ -59,7 +65,7 @@ namespace BackOffice.Entities
                     b.ToTable("DemandeConges");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.Registration", b =>
+            modelBuilder.Entity("Shared.models.Registration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,7 +89,7 @@ namespace BackOffice.Entities
                     b.ToTable("Registrations");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.Schedule", b =>
+            modelBuilder.Entity("Shared.models.Schedule", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +123,7 @@ namespace BackOffice.Entities
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.SoldeConge", b =>
+            modelBuilder.Entity("Shared.models.SoldeConge", b =>
                 {
                     b.Property<int>("IdConge")
                         .ValueGeneratedOnAdd()
@@ -141,7 +147,7 @@ namespace BackOffice.Entities
                     b.ToTable("SoldeConges");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.User", b =>
+            modelBuilder.Entity("Shared.models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -183,9 +189,9 @@ namespace BackOffice.Entities
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.DemandeConge", b =>
+            modelBuilder.Entity("Shared.models.DemandeConge", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "User")
+                    b.HasOne("Shared.models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -194,9 +200,9 @@ namespace BackOffice.Entities
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.Registration", b =>
+            modelBuilder.Entity("Shared.models.Registration", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "User")
+                    b.HasOne("Shared.models.User", "User")
                         .WithMany("Registrations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -205,9 +211,9 @@ namespace BackOffice.Entities
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.Schedule", b =>
+            modelBuilder.Entity("Shared.models.Schedule", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "User")
+                    b.HasOne("Shared.models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -216,9 +222,9 @@ namespace BackOffice.Entities
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.SoldeConge", b =>
+            modelBuilder.Entity("Shared.models.SoldeConge", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "Employe")
+                    b.HasOne("Shared.models.User", "Employe")
                         .WithMany()
                         .HasForeignKey("IdEmploye")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -227,7 +233,7 @@ namespace BackOffice.Entities
                     b.Navigation("Employe");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.User", b =>
+            modelBuilder.Entity("Shared.models.User", b =>
                 {
                     b.Navigation("Registrations");
                 });

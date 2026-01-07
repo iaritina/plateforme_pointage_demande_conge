@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shared.Context;
 
 #nullable disable
 
-namespace BackOffice.Entities
+namespace Shared.Entities
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20251229112048_AddRoleToUser")]
-    partial class AddRoleToUser
+    partial class MyDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +22,47 @@ namespace BackOffice.Entities
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BackOffice.Models.Registration", b =>
+            modelBuilder.Entity("Shared.models.DemandeConge", b =>
+                {
+                    b.Property<int>("IdDmd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDmd"));
+
+                    b.Property<DateTime>("DateDebut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DebutApresMidi")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FinApresMidi")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Motif")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("NombreJour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdDmd");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DemandeConges");
+                });
+
+            modelBuilder.Entity("Shared.models.Registration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +86,41 @@ namespace BackOffice.Entities
                     b.ToTable("Registrations");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.SoldeConge", b =>
+            modelBuilder.Entity("Shared.models.Schedule", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<string>("End")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Start")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Working")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Shared.models.SoldeConge", b =>
                 {
                     b.Property<int>("IdConge")
                         .ValueGeneratedOnAdd()
@@ -73,7 +144,7 @@ namespace BackOffice.Entities
                     b.ToTable("SoldeConges");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.User", b =>
+            modelBuilder.Entity("Shared.models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,7 +170,6 @@ namespace BackOffice.Entities
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
@@ -116,9 +186,9 @@ namespace BackOffice.Entities
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.Registration", b =>
+            modelBuilder.Entity("Shared.models.DemandeConge", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "User")
+                    b.HasOne("Shared.models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -127,15 +197,42 @@ namespace BackOffice.Entities
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BackOffice.Models.SoldeConge", b =>
+            modelBuilder.Entity("Shared.models.Registration", b =>
                 {
-                    b.HasOne("BackOffice.Models.User", "Employe")
+                    b.HasOne("Shared.models.User", "User")
+                        .WithMany("Registrations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shared.models.Schedule", b =>
+                {
+                    b.HasOne("Shared.models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shared.models.SoldeConge", b =>
+                {
+                    b.HasOne("Shared.models.User", "Employe")
                         .WithMany()
                         .HasForeignKey("IdEmploye")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employe");
+                });
+
+            modelBuilder.Entity("Shared.models.User", b =>
+                {
+                    b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618
         }

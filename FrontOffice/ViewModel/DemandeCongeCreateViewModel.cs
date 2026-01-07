@@ -14,4 +14,6 @@ public class DemandeCongeCreateViewModel
 
     [Required]
     public string Motif { get; set; }
+    public bool DebutApresMidi { get; set; }
+    public bool FinApresMidi { get; set; }
 }
