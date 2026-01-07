@@ -1,4 +1,5 @@
-﻿using BackOffice.Services;
+﻿using System.Security.Claims;
+using BackOffice.Services;
 using FrontOffice.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Shared.models;
@@ -20,7 +21,9 @@ public class DemandeCongeController : Controller
     // GET
     public async Task<IActionResult> Index()
     {
-        int userId = 4; // ⚠️ à remplacer par l’utilisateur connecté
+        int userId = int.Parse(
+            User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+        ); // ⚠️ à remplacer par l’utilisateur connecté
 
         var demandes = await _demandeCongeService.GetDemandesAsync(userId);
         return View(demandes);
@@ -37,10 +40,11 @@ public class DemandeCongeController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
-
         var demande = new DemandeConge
         {
-            UserId = 4,
+            UserId = int.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ),
             DateDebut = model.DateDebut,
             DateFin = model.DateFin,
             Motif = model.Motif
