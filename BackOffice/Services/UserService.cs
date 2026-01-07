@@ -1,7 +1,6 @@
-﻿using BackOffice.Context;
-using BackOffice.Models;
-using BackOffice.ViewModels;
+﻿using BackOffice.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Shared.Context;
 using Shared.models;
 
 

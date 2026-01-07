@@ -1,6 +1,6 @@
-﻿using BackOffice.Context;
-using BackOffice.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared.Context;
+using Shared.models;
 
 namespace BackOffice.Services;
 
@@ -101,4 +101,13 @@ public class DemandeCongeService
 
         return (items, totalCount);
     }
+    
+    public async Task<List<DemandeConge>> GetDemandesAsync(int userId)
+    {
+        return await _context.DemandeConges
+            .Where(d => d.UserId == userId)
+            .OrderByDescending(d => d.IdDmd)
+            .ToListAsync();
+    }
+
 }

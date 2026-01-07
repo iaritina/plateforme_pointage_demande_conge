@@ -1,4 +1,4 @@
-﻿namespace BackOffice.Models;
+﻿namespace Shared.models;
 
 public enum StatusEnum
 {

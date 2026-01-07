@@ -1,8 +1,7 @@
-﻿using BackOffice.Context;
-using BackOffice.Hubs;
-using BackOffice.Models;
+﻿using BackOffice.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Context;
 using Shared.models;
 
 namespace BackOffice.Services;

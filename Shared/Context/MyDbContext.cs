@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using BackOffice.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Shared.models;
 
-namespace BackOffice.Context;
+namespace Shared.Context;
 
 public partial class MyDbContext : DbContext
 {
