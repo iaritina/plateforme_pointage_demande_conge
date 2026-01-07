@@ -20,7 +20,7 @@ public class DemandeCongeController : Controller
     // GET
     public async Task<IActionResult> Index()
     {
-        int userId = 4; // ⚠️ à remplacer par l’utilisateur connecté
+        int userId = 2; // ⚠️ à remplacer par l’utilisateur connecté
 
         var demandes = await _demandeCongeService.GetDemandesAsync(userId);
         return View(demandes);
@@ -40,7 +40,7 @@ public class DemandeCongeController : Controller
 
         var demande = new DemandeConge
         {
-            UserId = 4,
+            UserId = 2,
             DateDebut = model.DateDebut,
             DateFin = model.DateFin,
             Motif = model.Motif
