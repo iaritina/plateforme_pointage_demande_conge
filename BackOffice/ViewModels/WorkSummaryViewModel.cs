@@ -22,6 +22,8 @@ public class WorkSummaryViewModel
 
     // Registrations
     public List<UserRegistrationsViewModel> Registrations { get; set; } = new List<UserRegistrationsViewModel>();
+    
+    public List<LeaveSlotViewModel> Leaves { get; set; } = new();
 }
 
 public class UserScheduleViewModel
@@ -50,4 +52,11 @@ public class RegistrationItemViewModel
 {
     public DateTime Timestamp { get; set; }
     public string Status { get; set; } = string.Empty;
+}
+
+public class LeaveSlotViewModel
+{
+    public string Date { get; set; } = string.Empty; // yyyy-MM-dd
+    public bool Morning { get; set; }                // Congé matin
+    public bool Afternoon { get; set; }              // Congé après-midi
 }
