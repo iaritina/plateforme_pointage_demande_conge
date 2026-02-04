@@ -1,66 +1,309 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - FrontOffice</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/FrontOffice.styles.css" asp-append-version="true"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FrontOffice Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --primary-color: #3b82f6;
+            --bg-light: #f8fafc;
+            --topbar-height: 70px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: var(--sidebar-bg);
+            color: white;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-list {
+            padding: 1.5rem 0;
+            flex-grow: 1;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item-custom {
+            padding: 0.25rem 1rem;
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background-color: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-link-custom i {
+            font-size: 1.2rem;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Main Content Styles */
+        #main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            height: var(--topbar-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .search-bar {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--sidebar-bg);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        .breadcrumb-custom {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            #sidebar {
+                left: -var(--sidebar-width);
+            }
+            #sidebar.active {
+                left: 0;
+            }
+            #main-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FrontOffice</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    @if (User.Identity?.IsAuthenticated ?? false)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                               asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DemandeConge" asp-action="Index">Congés</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="FrontAuth" asp-action="Login">
-                                Connexion
-                            </a>
-                        </li>
-                    }
 
-                </ul>
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="bi bi-lightning-fill text-white"></i>
+            </div>
+            <span>FrontOffice</span>
+        </div>
+
+        <ul class="nav-list">
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <li class="nav-item-custom">
+                    <a class="nav-link-custom active" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item-custom">
+                    <a class="nav-link-custom" asp-controller="DemandeConge" asp-action="Index">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Mes Congés</span>
+                    </a>
+                </li>
+                <li class="nav-item-custom">
+                    <a class="nav-link-custom" asp-controller="DemandeConge" asp-action="Creer">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Nouvelle Demande</span>
+                    </a>
+                </li>
+                <li class="nav-item-custom">
+                    <a class="nav-link-custom" asp-controller="Home" asp-action="Privacy">
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Confidentialité</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item-custom">
+                    <a class="nav-link-custom" asp-controller="FrontAuth" asp-action="Login">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        <span>Connexion</span>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="nav-link-custom" style="cursor: pointer;">
+                <i class="bi bi-question-circle"></i>
+                <span>Aide & Support</span>
             </div>
         </div>
     </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - FrontOffice - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- Main Content Wrapper -->
+    <div id="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn d-lg-none" id="sidebarCollapse">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <div class="search-bar d-none d-md-flex">
+                    <i class="bi bi-search text-muted"></i>
+                    <input type="text" placeholder="Rechercher...">
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+                <div class="position-relative">
+                    <i class="bi bi-bell fs-5 text-muted"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </div>
+                
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <div class="user-profile">
+                        <div class="text-end d-none d-sm-block">
+                            <div class="fw-bold small">@User.Identity.Name</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">Collaborateur</div>
+                        </div>
+                        <div class="user-avatar">
+                            @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                        </div>
+                    </div>
+                }
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="content-area">
+            <nav aria-label="breadcrumb" class="breadcrumb-custom">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+
+            @RenderBody()
+        </main>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            // Marquer le lien actif en fonction de l'URL
+            const currentPath = window.location.pathname;
+            $('.nav-link-custom').each(function() {
+                if ($(this).attr('href') === currentPath) {
+                    $('.nav-link-custom').removeClass('active');
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
