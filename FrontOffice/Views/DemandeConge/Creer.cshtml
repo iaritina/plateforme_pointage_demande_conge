@@ -1,59 +1,324 @@
 ﻿@model FrontOffice.ViewModel.DemandeCongeCreateViewModel
-
 @{
-    ViewData["Title"] = "Créer une demande de congé";
+    ViewData["Title"] = "Nouvelle demande d'absence";
 }
 
-<h2>Créer une demande de congé</h2>
+<style>
+    :root {
+        --primary-dark: #1e293b;
+        --bg-light: #f8fafc;
+        --border-color: #e2e8f0;
+        --text-muted: #64748b;
+    }
 
-<form asp-action="Creer" method="post">
-    @Html.AntiForgeryToken()
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
 
-    <div class="row">
-        <div class="col-6">
-            <div class="form-group">
-                <label asp-for="DateDebut"></label>
-                <input asp-for="DateDebut" class="form-control"/>
-                <span asp-validation-for="DateDebut" class="text-danger"></span>
-            </div>
-            
+    .form-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .header-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .back-button {
+        text-decoration: none;
+        color: var(--primary-dark);
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    .page-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary-dark);
+        margin: 0;
+    }
+
+    .search-input {
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        width: 250px;
+    }
+
+    .solde-badge {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .solde-icon {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .section-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Cards for Absence Types */
+    .absence-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .type-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .type-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .type-card.active {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
+
+    .type-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .icon-conge { background: #dbeafe; color: #1e40af; }
+    .icon-permission { background: #fef3c7; color: #92400e; }
+    .icon-mission { background: #dcfce7; color: #166534; }
+    .icon-maladie { background: #fee2e2; color: #991b1b; }
+
+    .type-info h4 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--primary-dark);
+    }
+
+    .type-info p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Form Inputs */
+    .date-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        align-items: flex-end;
+    }
+
+    .input-group-custom {
+        flex: 1;
+    }
+
+    .select-period {
+        width: 120px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: white;
+        font-size: 0.95rem;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .textarea-custom {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Buttons */
+    .actions-section {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 3rem;
+    }
+
+    .btn-cancel {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--primary-dark);
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .btn-submit {
+        background: #1e293b;
+        color: white;
+        border: none;
+        padding: 0.75rem 2.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: opacity 0.2s;
+    }
+
+    .btn-submit:hover {
+        opacity: 0.9;
+    }
+
+    /* Hidden radio for type selection */
+    .type-radio {
+        display: none;
+    }
+</style>
+
+<div class="form-container">
+    <div class="header-section">
+        <div class="d-flex align-items-center">
+            <h2 class="page-title">Nouvelle demande d'absence</h2>
         </div>
-        <div class="col-6">
+    </div>
 
-            <div class="form-group">
-                <label>Début</label>
-                <select asp-for="DebutApresMidi" class="form-control">
-                    <option value="false">Matin</option>
-                    <option value="true">Après-midi</option>
-                </select>
+    <div class="solde-badge">
+        <div class="solde-icon">🌴</div>
+        <div>
+            <strong>0 j</strong> <span style="color: var(--text-muted)">disponibles</span>
+        </div>c  
+    </div>
+
+    <form asp-action="Creer" method="post">
+        @Html.AntiForgeryToken()
+
+        <label class="section-label">Type d'absence</label>
+        <div class="absence-types-grid">
+            <label class="type-card active">
+                <input type="radio" name="TypeAbsence" value="Conge" class="type-radio" checked>
+                <div class="type-icon icon-conge">✈️</div>
+                <div class="type-info">
+                    <h4>Congé</h4>
+                    <p>Congé payé annuel</p>
+                </div>
+            </label>
+
+            <label class="type-card">
+                <input type="radio" name="TypeAbsence" value="Permission" class="type-radio">
+                <div class="type-icon icon-permission">☕</div>
+                <div class="type-info">
+                    <h4>Permission</h4>
+                    <p>Absence courte durée</p>
+                </div>
+            </label>
+
+            <label class="type-card">
+                <input type="radio" name="TypeAbsence" value="Mission" class="type-radio">
+                <div class="type-icon icon-mission">🏢</div>
+                <div class="type-info">
+                    <h4>Mission</h4>
+                    <p>Déplacement pro</p>
+                </div>
+            </label>
+
+            <label class="type-card">
+                <input type="radio" name="TypeAbsence" value="Maladie" class="type-radio">
+                <div class="type-icon icon-maladie">🩺</div>
+                <div class="type-info">
+                    <h4>Arrêt Maladie</h4>
+                    <p>Absence médicale</p>
+                </div>
+            </label>
+        </div>
+
+        <div class="mb-4">
+            <label class="section-label">Date de départ</label>
+            <div class="date-row">
+                <div class="input-group-custom">
+                    <input asp-for="DateDebut" type="date" class="form-control-custom" />
+                    <span asp-validation-for="DateDebut" class="text-danger small"></span>
+                </div>
+                <div class="select-period">
+                    <select asp-for="DebutApresMidi" class="form-control-custom">
+                        <option value="false">matin</option>
+                        <option value="true">après-midi</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label asp-for="DateFin"></label>
-        <input asp-for="DateFin" class="form-control" />
-        <span asp-validation-for="DateFin" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label>Fin</label>
-        <select asp-for="FinApresMidi" class="form-control">
-            <option value="false">Matin</option>
-            <option value="true">Après-midi</option>
-        </select>
-    </div>
+        <div class="mb-4">
+            <label class="section-label">Date de retour</label>
+            <div class="date-row">
+                <div class="input-group-custom">
+                    <input asp-for="DateFin" type="date" class="form-control-custom" />
+                    <span asp-validation-for="DateFin" class="text-danger small"></span>
+                </div>
+                <div class="select-period">
+                    <select asp-for="FinApresMidi" class="form-control-custom">
+                        <option value="false">matin</option>
+                        <option value="true">après-midi</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Motif"></label>
-        <textarea asp-for="Motif" class="form-control"></textarea>
-        <span asp-validation-for="Motif" class="text-danger"></span>
-    </div>
+        <div class="mb-4">
+            <label class="section-label">Motif de la demande</label>
+            <textarea asp-for="Motif" class="form-control-custom textarea-custom" placeholder="Décrivez brièvement le motif de votre demande..."></textarea>
+            <span asp-validation-for="Motif" class="text-danger small"></span>
+        </div>
 
-    <button type="submit" class="btn btn-primary mt-3">
-        Envoyer la demande
-    </button>
-</form>
+        <div class="actions-section">
+            <button type="button" class="btn-cancel">Annuler</button>
+            <button type="submit" class="btn-submit">Soumettre la demande</button>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        // Script simple pour gérer l'état visuel des cartes de type d'absence
+        document.querySelectorAll('.type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
 }
