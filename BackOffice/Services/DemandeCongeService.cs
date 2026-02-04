@@ -73,36 +73,48 @@ public class DemandeCongeService
     {
         decimal total = 0;
 
-        // parcourt chaque date en ajoutant +1
+        // Parcourir de la date de départ à la date de retour
         for (var date = d.DateDebut.Date; date <= d.DateFin.Date; date = date.AddDays(1))
         {
-            // Ignore samedi / dimanche
-            if (date.DayOfWeek == DayOfWeek.Saturday ||
-                date.DayOfWeek == DayOfWeek.Sunday)
+            // Ignorer weekends
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                 continue;
 
-            // Jour unique
+            // CAS 1 : Même jour (départ et retour le même jour)
             if (d.DateDebut.Date == d.DateFin.Date)
             {
-                if (d.DebutApresMidi && !d.FinApresMidi)
-                    total += 0.5m;
-                else
-                    total += 1m;
-
-                break;
+                // Départ matin + retour matin = 0j (pas d'absence)
+                if (!d.DebutApresMidi && !d.FinApresMidi)
+                    return 0m;
+            
+                // Départ matin + retour après-midi = 0.5j (absent le matin)
+                if (!d.DebutApresMidi && d.FinApresMidi)
+                    return 0.5m;
+            
+                // Départ après-midi + retour après-midi = 0j (pas d'absence)
+                if (d.DebutApresMidi && d.FinApresMidi)
+                    return 0m;
+            
+                // Départ après-midi + retour matin = invalide
+                return 0m;
             }
 
-            // Premier jour
+            // CAS 2 : Plusieurs jours
+            // Premier jour (jour de départ)
             if (date == d.DateDebut.Date)
             {
+                // Départ matin = absent toute la journée
+                // Départ après-midi = absent seulement l'après-midi
                 total += d.DebutApresMidi ? 0.5m : 1m;
             }
-            // Dernier jour
+            // Dernier jour (jour de retour)
             else if (date == d.DateFin.Date)
             {
-                total += d.FinApresMidi ? 1m : 0.5m;
+                // Retour matin = pas absent ce jour-là (0j)
+                // Retour après-midi = absent le matin (0.5j)
+                total += d.FinApresMidi ? 0.5m : 0m;
             }
-            // Jours intermédiaires, les jours entre debut et fin
+            // Jours intermédiaires
             else
             {
                 total += 1m;

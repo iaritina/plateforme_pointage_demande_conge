@@ -23,7 +23,7 @@ public class DemandeCongeController : Controller
     {
         int userId = int.Parse(
             User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-        ); // ⚠️ à remplacer par l’utilisateur connecté
+        );
 
         var demandes = await _demandeCongeService.GetDemandesAsync(userId);
         return View(demandes);
@@ -47,7 +47,9 @@ public class DemandeCongeController : Controller
             ),
             DateDebut = model.DateDebut,
             DateFin = model.DateFin,
-            Motif = model.Motif
+            Motif = model.Motif,
+            DebutApresMidi = model.DebutApresMidi,
+            FinApresMidi = model.FinApresMidi
         };
 
         await _demandeCongeService.CreerDemandeAsync(demande);
