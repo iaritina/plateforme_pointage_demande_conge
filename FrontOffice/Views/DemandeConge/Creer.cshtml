@@ -1,6 +1,6 @@
 ﻿@model FrontOffice.ViewModel.DemandeCongeCreateViewModel
 @{
-    ViewData["Title"] = "Nouvelle demande d'absence";
+ViewData["Title"] = "Nouvelle demande d'absence";
 }
 
 <style>
@@ -9,78 +9,49 @@
         --bg-light: #f8fafc;
         --border-color: #e2e8f0;
         --text-muted: #64748b;
+        --accent-blue: #3b82f6;
     }
 
-    body {
-        background-color: var(--bg-light);
-        font-family: 'Inter', -apple-system, sans-serif;
-    }
-
-    .form-container {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
-    }
-
-    .header-section {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-    }
-
-    .back-button {
-        text-decoration: none;
-        color: var(--primary-dark);
-        font-size: 1.2rem;
-        margin-right: 1rem;
-    }
-
-    .page-title {
-        font-weight: 700;
-        font-size: 1.5rem;
-        color: var(--primary-dark);
-        margin: 0;
-    }
-
-    .search-input {
-        border-radius: 8px;
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        padding: 2rem;
         border: 1px solid var(--border-color);
-        padding: 0.5rem 1rem;
-        width: 250px;
     }
 
     .solde-badge {
-        background: white;
-        border: 1px solid var(--border-color);
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
         border-radius: 12px;
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1.25rem;
         display: inline-flex;
         align-items: center;
         gap: 0.75rem;
         margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .solde-icon {
-        background: #e0f2fe;
         color: #0369a1;
-        padding: 0.5rem;
-        border-radius: 8px;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
     }
 
     .section-label {
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: var(--text-muted);
-        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        margin-bottom: 1.25rem;
         display: block;
     }
 
     /* Cards for Absence Types */
     .absence-types-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 2.5rem;
     }
@@ -94,27 +65,29 @@
         align-items: center;
         gap: 1rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+        position: relative;
     }
 
     .type-card:hover {
-        border-color: #3b82f6;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-color: var(--accent-blue);
+        background-color: #f8fafc;
     }
 
     .type-card.active {
-        border-color: #3b82f6;
+        border-color: var(--accent-blue);
         background-color: #eff6ff;
+        box-shadow: 0 0 0 1px var(--accent-blue);
     }
 
     .type-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.25rem;
     }
 
     .icon-conge { background: #dbeafe; color: #1e40af; }
@@ -123,14 +96,14 @@
     .icon-maladie { background: #fee2e2; color: #991b1b; }
 
     .type-info h4 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         margin: 0;
         color: var(--primary-dark);
     }
 
     .type-info p {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
         margin: 0;
     }
@@ -140,7 +113,7 @@
         display: flex;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        align-items: flex-end;
+        align-items: flex-start;
     }
 
     .input-group-custom {
@@ -148,7 +121,7 @@
     }
 
     .select-period {
-        width: 120px;
+        width: 140px;
     }
 
     .form-control-custom {
@@ -158,11 +131,12 @@
         border-radius: 10px;
         background-color: white;
         font-size: 0.95rem;
+        transition: border-color 0.2s;
     }
 
     .form-control-custom:focus {
         outline: none;
-        border-color: #3b82f6;
+        border-color: var(--accent-blue);
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
@@ -174,63 +148,82 @@
     /* Buttons */
     .actions-section {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         gap: 1rem;
-        margin-top: 3rem;
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
     }
 
     .btn-cancel {
         background: white;
         border: 1px solid var(--border-color);
-        color: var(--primary-dark);
-        padding: 0.75rem 2rem;
+        color: var(--text-muted);
+        padding: 0.75rem 1.5rem;
         border-radius: 10px;
         font-weight: 600;
-        transition: background 0.2s;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f1f5f9;
+        color: var(--primary-dark);
     }
 
     .btn-submit {
-        background: #1e293b;
+        background: var(--primary-dark);
         color: white;
         border: none;
-        padding: 0.75rem 2.5rem;
+        padding: 0.75rem 2rem;
         border-radius: 10px;
         font-weight: 600;
-        transition: opacity 0.2s;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
     }
 
     .btn-submit:hover {
-        opacity: 0.9;
+        background: #0f172a;
+        transform: translateY(-1px);
     }
 
-    /* Hidden radio for type selection */
     .type-radio {
         display: none;
     }
+
+    .input-label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: var(--primary-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
 </style>
 
-<div class="form-container">
-    <div class="header-section">
-        <div class="d-flex align-items-center">
-            <h2 class="page-title">Nouvelle demande d'absence</h2>
-        </div>
-    </div>
-
+<div class="form-card">
     <div class="solde-badge">
-        <div class="solde-icon">🌴</div>
+        <div class="solde-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
         <div>
-            <strong>0 j</strong> <span style="color: var(--text-muted)">disponibles</span>
-        </div>c  
+            <span class="text-muted small">Solde actuel :</span>
+            <strong class="ms-1">0 jours disponibles</strong>
+        </div>
     </div>
 
     <form asp-action="Creer" method="post">
         @Html.AntiForgeryToken()
 
-        <label class="section-label">Type d'absence</label>
+        <label class="section-label">1. Type d'absence</label>
         <div class="absence-types-grid">
             <label class="type-card active">
                 <input type="radio" name="TypeAbsence" value="Conge" class="type-radio" checked>
-                <div class="type-icon icon-conge">✈️</div>
+                <div class="type-icon icon-conge">
+                    <i class="bi bi-airplane-engines"></i>
+                </div>
                 <div class="type-info">
                     <h4>Congé</h4>
                     <p>Congé payé annuel</p>
@@ -239,7 +232,9 @@
 
             <label class="type-card">
                 <input type="radio" name="TypeAbsence" value="Permission" class="type-radio">
-                <div class="type-icon icon-permission">☕</div>
+                <div class="type-icon icon-permission">
+                    <i class="bi bi-clock-history"></i>
+                </div>
                 <div class="type-info">
                     <h4>Permission</h4>
                     <p>Absence courte durée</p>
@@ -248,7 +243,9 @@
 
             <label class="type-card">
                 <input type="radio" name="TypeAbsence" value="Mission" class="type-radio">
-                <div class="type-icon icon-mission">🏢</div>
+                <div class="type-icon icon-mission">
+                    <i class="bi bi-briefcase"></i>
+                </div>
                 <div class="type-info">
                     <h4>Mission</h4>
                     <p>Déplacement pro</p>
@@ -257,7 +254,9 @@
 
             <label class="type-card">
                 <input type="radio" name="TypeAbsence" value="Maladie" class="type-radio">
-                <div class="type-icon icon-maladie">🩺</div>
+                <div class="type-icon icon-maladie">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
                 <div class="type-info">
                     <h4>Arrêt Maladie</h4>
                     <p>Absence médicale</p>
@@ -265,60 +264,67 @@
             </label>
         </div>
 
-        <div class="mb-4">
-            <label class="section-label">Date de départ</label>
-            <div class="date-row">
-                <div class="input-group-custom">
-                    <input asp-for="DateDebut" type="date" class="form-control-custom" />
-                    <span asp-validation-for="DateDebut" class="text-danger small"></span>
+        <label class="section-label">2. Période de l'absence</label>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label class="input-label">Date de départ</label>
+                <div class="date-row">
+                    <div class="input-group-custom">
+                        <input asp-for="DateDebut" type="date" class="form-control-custom" />
+                        <span asp-validation-for="DateDebut" class="text-danger small"></span>
+                    </div>
+                    <div class="select-period">
+                        <select asp-for="DebutApresMidi" class="form-control-custom">
+                            <option value="false">Matin</option>
+                            <option value="true">Après-midi</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="select-period">
-                    <select asp-for="DebutApresMidi" class="form-control-custom">
-                        <option value="false">matin</option>
-                        <option value="true">après-midi</option>
-                    </select>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <label class="input-label">Date de retour</label>
+                <div class="date-row">
+                    <div class="input-group-custom">
+                        <input asp-for="DateFin" type="date" class="form-control-custom" />
+                        <span asp-validation-for="DateFin" class="text-danger small"></span>
+                    </div>
+                    <div class="select-period">
+                        <select asp-for="FinApresMidi" class="form-control-custom">
+                            <option value="false">Matin</option>
+                            <option value="true">Après-midi</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <label class="section-label">3. Informations complémentaires</label>
         <div class="mb-4">
-            <label class="section-label">Date de retour</label>
-            <div class="date-row">
-                <div class="input-group-custom">
-                    <input asp-for="DateFin" type="date" class="form-control-custom" />
-                    <span asp-validation-for="DateFin" class="text-danger small"></span>
-                </div>
-                <div class="select-period">
-                    <select asp-for="FinApresMidi" class="form-control-custom">
-                        <option value="false">matin</option>
-                        <option value="true">après-midi</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <label class="section-label">Motif de la demande</label>
-            <textarea asp-for="Motif" class="form-control-custom textarea-custom" placeholder="Décrivez brièvement le motif de votre demande..."></textarea>
+            <label class="input-label">Motif de la demande</label>
+            <textarea asp-for="Motif" class="form-control-custom textarea-custom" placeholder="Précisez le motif de votre absence..."></textarea>
             <span asp-validation-for="Motif" class="text-danger small"></span>
         </div>
 
         <div class="actions-section">
             <button type="button" class="btn-cancel">Annuler</button>
-            <button type="submit" class="btn-submit">Soumettre la demande</button>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-send-fill"></i>
+                Soumettre la demande
+            </button>
         </div>
     </form>
 </div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script>
-        // Script simple pour gérer l'état visuel des cartes de type d'absence
-        document.querySelectorAll('.type-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-            });
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script>
+    document.querySelectorAll('.type-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            this.querySelector('input[type="radio"]').checked = true;
         });
-    </script>
+    });
+</script>
 }
