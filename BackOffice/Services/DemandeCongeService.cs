@@ -48,6 +48,24 @@ public class DemandeCongeService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> RefuserDemandeAsync(int idDemande)
+    {
+        var demande = await _context.DemandeConges
+            .FirstOrDefaultAsync(d => d.IdDmd == idDemande);
+
+        if (demande == null)
+            return false;
+
+        if (demande.Status == StatusEnum.ok || demande.Status == StatusEnum.ko)
+            return false;
+
+        demande.Status = StatusEnum.ko;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
 
     // READ
     public async Task<List<DemandeConge>> GetDemandesAsync()
@@ -83,19 +101,15 @@ public class DemandeCongeService
             // CAS 1 : Même jour (départ et retour le même jour)
             if (d.DateDebut.Date == d.DateFin.Date)
             {
-                // Départ matin + retour matin = 0j (pas d'absence)
                 if (!d.DebutApresMidi && !d.FinApresMidi)
                     return 0m;
             
-                // Départ matin + retour après-midi = 0.5j (absent le matin)
                 if (!d.DebutApresMidi && d.FinApresMidi)
                     return 0.5m;
             
-                // Départ après-midi + retour après-midi = 0j (pas d'absence)
                 if (d.DebutApresMidi && d.FinApresMidi)
                     return 0m;
             
-                // Départ après-midi + retour matin = invalide
                 return 0m;
             }
 
@@ -103,15 +117,10 @@ public class DemandeCongeService
             // Premier jour (jour de départ)
             if (date == d.DateDebut.Date)
             {
-                // Départ matin = absent toute la journée
-                // Départ après-midi = absent seulement l'après-midi
                 total += d.DebutApresMidi ? 0.5m : 1m;
             }
-            // Dernier jour (jour de retour)
             else if (date == d.DateFin.Date)
             {
-                // Retour matin = pas absent ce jour-là (0j)
-                // Retour après-midi = absent le matin (0.5j)
                 total += d.FinApresMidi ? 0.5m : 0m;
             }
             // Jours intermédiaires
