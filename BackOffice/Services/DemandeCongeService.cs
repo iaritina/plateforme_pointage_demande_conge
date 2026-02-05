@@ -48,6 +48,24 @@ public class DemandeCongeService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> RefuserDemandeAsync(int idDemande)
+    {
+        var demande = await _context.DemandeConges
+            .FirstOrDefaultAsync(d => d.IdDmd == idDemande);
+
+        if (demande == null)
+            return false;
+
+        if (demande.Status == StatusEnum.ok || demande.Status == StatusEnum.ko)
+            return false;
+
+        demande.Status = StatusEnum.ko;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
 
     // READ
     public async Task<List<DemandeConge>> GetDemandesAsync()

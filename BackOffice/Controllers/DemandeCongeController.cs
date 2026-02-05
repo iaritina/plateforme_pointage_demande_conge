@@ -53,4 +53,23 @@ public class DemandeCongeController : Controller
             message = "Demande de congé validée avec succès."
         });
     }
+    
+    [HttpPost("refuser/{id}")]
+    public async Task<IActionResult> RefuserDemande(int id)
+    {
+        var success = await _demandeService.RefuserDemandeAsync(id);
+
+        if (!success)
+        {
+            return BadRequest(new
+            {
+                message = "La demande ne peut pas être refusée (inexistante ou déjà traitée)."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Demande de congé refusée avec succès."
+        });
+    }
 }
