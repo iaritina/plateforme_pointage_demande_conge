@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BackOffice.Data;
 using BackOffice.Hubs;
 using Shared.Context;
 
@@ -103,6 +104,8 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+await UserSeeder.SeedAsync(app.Services);
 
 app.MapControllers();
 app.MapHub<MonitoringHubs>("/hubs/monitoring");
