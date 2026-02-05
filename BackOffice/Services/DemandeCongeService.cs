@@ -83,19 +83,15 @@ public class DemandeCongeService
             // CAS 1 : Même jour (départ et retour le même jour)
             if (d.DateDebut.Date == d.DateFin.Date)
             {
-                // Départ matin + retour matin = 0j (pas d'absence)
                 if (!d.DebutApresMidi && !d.FinApresMidi)
                     return 0m;
             
-                // Départ matin + retour après-midi = 0.5j (absent le matin)
                 if (!d.DebutApresMidi && d.FinApresMidi)
                     return 0.5m;
             
-                // Départ après-midi + retour après-midi = 0j (pas d'absence)
                 if (d.DebutApresMidi && d.FinApresMidi)
                     return 0m;
             
-                // Départ après-midi + retour matin = invalide
                 return 0m;
             }
 
@@ -103,15 +99,10 @@ public class DemandeCongeService
             // Premier jour (jour de départ)
             if (date == d.DateDebut.Date)
             {
-                // Départ matin = absent toute la journée
-                // Départ après-midi = absent seulement l'après-midi
                 total += d.DebutApresMidi ? 0.5m : 1m;
             }
-            // Dernier jour (jour de retour)
             else if (date == d.DateFin.Date)
             {
-                // Retour matin = pas absent ce jour-là (0j)
-                // Retour après-midi = absent le matin (0.5j)
                 total += d.FinApresMidi ? 0.5m : 0m;
             }
             // Jours intermédiaires
