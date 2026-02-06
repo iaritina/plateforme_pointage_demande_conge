@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using BackOffice.Services;
+using FrontOffice.Auth;
 using FrontOffice.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Shared.models;
@@ -19,6 +20,7 @@ public class DemandeCongeController : Controller
     }
 
     // GET
+    [JwtAuthorize]
     public async Task<IActionResult> Index()
     {
         int userId = int.Parse(
@@ -36,6 +38,7 @@ public class DemandeCongeController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [JwtAuthorize]
     public async Task<IActionResult> Creer(DemandeCongeCreateViewModel model)
     {
         if (!ModelState.IsValid)
