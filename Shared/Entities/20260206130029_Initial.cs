@@ -107,7 +107,8 @@ namespace Shared.Entities
                     IdConge = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdEmploye = table.Column<int>(type: "int", nullable: false),
-                    SoldeTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
                     SoldeRestant = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>

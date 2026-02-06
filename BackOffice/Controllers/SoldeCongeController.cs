@@ -58,7 +58,7 @@ public class SoldeCongeController : Controller
         }
             
 
-        await _service.CreateAsync(dto.EmployeeId, dto.SoldeRestant);
+        await _service.CreateAsync(dto.EmployeeId);
 
         return CreatedAtAction(nameof(GetAll), new { page = 1 }, dto);
     }
@@ -68,6 +68,13 @@ public class SoldeCongeController : Controller
     {
         var resp = await _service.GetByEmployeeAsync(empId);
         return Ok(resp);
+    }
+
+    [HttpGet("test/{empId:int}")]
+    public async Task<IActionResult> TestCreateSolde(int empId)
+    {
+         await _service.CreateAsync(empId);
+         return Ok("OK");
     }
     
 }

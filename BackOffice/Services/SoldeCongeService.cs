@@ -45,17 +45,50 @@ public class SoldeCongeService
             .FirstOrDefaultAsync(s => s.IdEmploye == employeeId);
     }
 
-    public async Task CreateAsync(int employeeId, decimal soldeInitial = 30)
+    public async Task CreateAsync(int employeeId)
     {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == employeeId);
+
+        if (user == null)
+            throw new Exception("Employé introuvable");
+
+        var soldeCalcule = CalculerSoldeConge(user.HiringDate);
+
         var solde = new SoldeConge
         {
             IdEmploye = employeeId,
-            SoldeRestant = soldeInitial
+            SoldeRestant = soldeCalcule,
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year,
+            
         };
 
         _context.SoldeConges.Add(solde);
         await _context.SaveChangesAsync();
     }
+
+    
+    private decimal CalculerSoldeConge(DateTime hiringDate)
+    {
+        var today = DateTime.Today;
+
+        int months =
+            (today.Year - hiringDate.Year) * 12
+            + today.Month - hiringDate.Month;
+
+        // Si le mois en cours n'est pas complet
+        if (today.Day < hiringDate.Day)
+        {
+            months--;
+        }
+
+        if (months < 0)
+            months = 0;
+
+        return months * 2.5m;
+    }
+
 
     public async Task UpdateSoldeAsync(int id, decimal nouveauSolde)
     {

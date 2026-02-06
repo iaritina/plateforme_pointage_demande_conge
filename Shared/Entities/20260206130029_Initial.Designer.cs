@@ -12,7 +12,7 @@ using Shared.Context;
 namespace Shared.Entities
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20260107052105_Initial")]
+    [Migration("20260206130029_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -134,11 +134,14 @@ namespace Shared.Entities
                     b.Property<int>("IdEmploye")
                         .HasColumnType("int");
 
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("SoldeRestant")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("SoldeTotal")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("IdConge");
 
