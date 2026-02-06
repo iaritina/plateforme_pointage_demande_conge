@@ -4,6 +4,7 @@ namespace BackOffice.ViewModels;
 
 public class UserStatusViewModel
 {
+    public int Id { get; set; }
     public string LastName { get; set; } = "";
     public DateTime? LastRegistrationTime { get; set; }
     public RegistrationType LastStatus { get; set; } = RegistrationType.Exit;

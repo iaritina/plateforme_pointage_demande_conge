@@ -45,6 +45,7 @@ public class MonitoringService
 
                 userStatusList.Add(new UserStatusViewModel
                 {
+                    Id = user.Id,
                     LastName = user.LastName,
                     LastRegistrationTime = lastRegistration?.Timestamp.ToLocalTime(),
                     LastStatus = status
