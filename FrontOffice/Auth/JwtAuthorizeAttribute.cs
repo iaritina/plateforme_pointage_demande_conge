@@ -11,7 +11,7 @@ public class JwtAuthorizeAttribute : ActionFilterAttribute
 
         if (!isAuthenticated)
         {
-            context.Result = new RedirectToActionResult("Login", "Auth", null);
+            context.Result = new RedirectToActionResult("Login", "FrontAuth", null);
             return;
         }
 
