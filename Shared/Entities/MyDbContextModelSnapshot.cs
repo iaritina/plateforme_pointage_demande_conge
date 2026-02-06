@@ -131,11 +131,14 @@ namespace Shared.Entities
                     b.Property<int>("IdEmploye")
                         .HasColumnType("int");
 
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("SoldeRestant")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("SoldeTotal")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("IdConge");
 

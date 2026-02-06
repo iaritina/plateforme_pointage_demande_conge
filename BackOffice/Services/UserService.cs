@@ -9,10 +9,12 @@ namespace BackOffice.Services;
 public class UserService
 {
     private readonly MyDbContext _context;
+    private readonly SoldeCongeService _soldeCongeService;
 
-    public UserService(MyDbContext context)
+    public UserService(MyDbContext context, SoldeCongeService soldeCongeService)
     {
         _context = context;
+        _soldeCongeService = soldeCongeService;
     }
 
     public async Task<List<User>> GetAllUserAsync()
@@ -50,6 +52,8 @@ public class UserService
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+        
+        await _soldeCongeService.CreateAsync(user.Id);
         
         var schedules = new List<Schedule>();
         

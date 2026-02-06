@@ -12,6 +12,8 @@ public class SoldeConge
     public int IdEmploye { get; set; }
     [ForeignKey("IdEmploye")] public User Employe { get; set; } = null!;
 
-    public decimal SoldeTotal { get; set; } = 30;
+    public int Month { get; set; }
+
+    public int Year { get; set; }
     public decimal SoldeRestant { get; set; } = 30;
 }
