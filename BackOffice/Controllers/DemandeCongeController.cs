@@ -1,4 +1,5 @@
-﻿using BackOffice.Services;
+﻿using BackOffice.DTO;
+using BackOffice.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackOffice.Controllers;
@@ -18,20 +19,21 @@ public class DemandeCongeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(int page = 1)
+    public async Task<IActionResult> GetAll([FromQuery] DemandeCongeQueryDTO q)
     {
-        var (items, totalCount) =
-            await _demandeService.GetAllPagedAsync(page, PageSize);
+        if (q.Page < 1) q.Page = 1;
+        if (q.PageSize < 1) q.PageSize = 10;
+        if (q.PageSize > 200) q.PageSize = 200; // limite sécurité
 
-        var totalPages = (int)Math.Ceiling(totalCount / (double)PageSize);
+        var result = await _demandeService.SearchPagedAsync(q);
 
         return Ok(new
         {
-            currentPage = page,
-            totalPages,
-            pageSize = PageSize,
-            totalCount,
-            items
+            currentPage = q.Page,
+            totalPages = (int)Math.Ceiling(result.TotalCount / (double)q.PageSize),
+            pageSize = q.PageSize,
+            totalCount = result.TotalCount,
+            items = result.Items
         });
     }
 

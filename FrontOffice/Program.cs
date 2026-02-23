@@ -1,5 +1,6 @@
 using System.Text;
-using BackOffice.Services;
+using FrontOffice.Repository;
+using FrontOffice.Service;
 using FrontOffice.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,6 +42,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped<DemandeCongeRepository>();
 builder.Services.AddScoped<DemandeCongeService>();
 var app = builder.Build();
 

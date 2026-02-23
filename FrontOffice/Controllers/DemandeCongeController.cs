@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using BackOffice.Services;
 using FrontOffice.Auth;
+using FrontOffice.Service;
 using FrontOffice.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Shared.models;
@@ -27,7 +27,7 @@ public class DemandeCongeController : Controller
             User.FindFirst(ClaimTypes.NameIdentifier)!.Value
         );
 
-        var demandes = await _demandeCongeService.GetDemandesAsync(userId);
+        var demandes = await _demandeCongeService.GetUserDemandesAsync(userId);
         return View(demandes);
     }
     
@@ -36,7 +36,7 @@ public class DemandeCongeController : Controller
         return View();
     }
     
-    [HttpPost]
+    /*[HttpPost]
     [ValidateAntiForgeryToken]
     [JwtAuthorize]
     public async Task<IActionResult> Creer(DemandeCongeCreateViewModel model)
@@ -58,5 +58,5 @@ public class DemandeCongeController : Controller
         await _demandeCongeService.CreerDemandeAsync(demande);
 
         return RedirectToAction("Index");
-    }
+    }*/
 }
