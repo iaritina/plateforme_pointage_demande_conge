@@ -30,7 +30,6 @@ public class FrontAuthController : Controller
 
         var client = _httpClientFactory.CreateClient();
 
-        // ⚠️ Appel de l’API BO
         var response = await client.PostAsJsonAsync(
             $"{_configuration["ApiBaseUrl"]}/auth/login",
             model
@@ -42,15 +41,12 @@ public class FrontAuthController : Controller
             return View(model);
         }
 
-        // 🔐 Récupération du JWT
         var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
         var token = result!.Token;
 
-        // 🔎 Lecture du JWT
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(token);
 
-        // 🧩 Transformation du JWT → Claims MVC
         var claims = jwt.Claims.ToList();
 
         // Important : type d’authentification = Cookies
@@ -61,7 +57,6 @@ public class FrontAuthController : Controller
 
         var principal = new ClaimsPrincipal(identity);
 
-        // 🍪 Connexion MVC
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal

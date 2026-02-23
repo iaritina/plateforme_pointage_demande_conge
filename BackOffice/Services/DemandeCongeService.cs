@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BackOffice.DTO;
+using BackOffice.utils;
+using Microsoft.EntityFrameworkCore;
 using Shared.Context;
 using Shared.models;
 
@@ -157,5 +159,95 @@ public class DemandeCongeService
             .Where(d => d.UserId == userId)
             .OrderByDescending(d => d.IdDmd)
             .ToListAsync();
+    }
+    
+    public async Task<PagedResult<DemandeCongeDto>> SearchPagedAsync(DemandeCongeQueryDTO q)
+    {
+        // sécurité
+        if (q.Page < 1) q.Page = 1;
+        if (q.PageSize < 1) q.PageSize = 10;
+        if (q.PageSize > 200) q.PageSize = 200;
+
+        IQueryable<DemandeConge> query = _context.DemandeConges
+            .AsNoTracking()
+            .Include(d => d.User);
+
+        // filters
+        if (q.UserId.HasValue)
+            query = query.Where(d => d.UserId == q.UserId.Value);
+
+        if (q.Status.HasValue)
+            query = query.Where(d => d.Status == q.Status.Value);
+
+        if (q.DateFrom.HasValue)
+            query = query.Where(d => d.DateDebut >= q.DateFrom.Value);
+
+        if (q.DateTo.HasValue)
+            query = query.Where(d => d.DateDebut <= q.DateTo.Value);
+
+        if (!string.IsNullOrWhiteSpace(q.Motif))
+            query = query.Where(d => d.Motif.Contains(q.Motif));
+        
+        if (!string.IsNullOrWhiteSpace(q.FullName))
+        {
+            var search = q.FullName.ToLower();
+
+            query = query.Where(d =>
+                (d.User.FirstName + " " + d.User.LastName).ToLower().Contains(search)
+                || (d.User.LastName + " " + d.User.FirstName).ToLower().Contains(search)
+            );
+        }
+
+        // sort (whitelist)
+        var dirAsc = q.SortDir.Equals("asc", StringComparison.OrdinalIgnoreCase);
+
+        query = (q.SortBy?.ToLower()) switch
+        {
+            "datefin"     => dirAsc ? query.OrderBy(d => d.DateFin)     : query.OrderByDescending(d => d.DateFin),
+            "status"      => dirAsc ? query.OrderBy(d => d.Status)      : query.OrderByDescending(d => d.Status),
+            "nombrejour"  => dirAsc ? query.OrderBy(d => d.NombreJour)  : query.OrderByDescending(d => d.NombreJour),
+            "iddmd"       => dirAsc ? query.OrderBy(d => d.IdDmd)       : query.OrderByDescending(d => d.IdDmd),
+            _             => dirAsc ? query.OrderBy(d => d.DateDebut)   : query.OrderByDescending(d => d.DateDebut),
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((q.Page - 1) * q.PageSize)
+            .Take(q.PageSize)
+            .Select(d => new DemandeCongeDto
+            {
+                IdDmd = d.IdDmd,
+                UserId = d.UserId,
+                DateDebut = d.DateDebut,
+                DebutApresMidi = d.DebutApresMidi,
+                DateFin = d.DateFin,
+                FinApresMidi = d.FinApresMidi,
+                Motif = d.Motif,
+                NombreJour = d.NombreJour,
+                Status = d.Status,
+                User = new UserMiniDto
+                {
+                    Id = d.User.Id,
+                    FirstName = d.User.FirstName,
+                    LastName = d.User.LastName,
+                    Email = d.User.Email,
+                    Phone = d.User.Phone,
+                    HiringDate = d.User.HiringDate,
+                    Role = d.User.Role
+                }
+            })
+            .ToListAsync();
+
+        var totalPages = (int)Math.Ceiling(totalCount / (double)q.PageSize);
+
+        return new PagedResult<DemandeCongeDto>
+        {
+            CurrentPage = q.Page,
+            PageSize = q.PageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+            Items = items
+        };
     }
 }
