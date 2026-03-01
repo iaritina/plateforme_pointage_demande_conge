@@ -1,4 +1,5 @@
 using System.Text;
+using FrontOffice.Data;
 using FrontOffice.Repository;
 using FrontOffice.Service;
 using FrontOffice.Utils;
@@ -42,6 +43,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped<DbConnectionFactory>();
 builder.Services.AddScoped<DemandeCongeRepository>();
 builder.Services.AddScoped<DemandeCongeService>();
 var app = builder.Build();

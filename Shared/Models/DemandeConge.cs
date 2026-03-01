@@ -21,5 +21,6 @@ public class DemandeConge
     public string Motif { get; set; }
     public decimal NombreJour { get; set; }
 
+    public int decisionYear { get; set; }
     public StatusEnum Status { get; set; }
 }
