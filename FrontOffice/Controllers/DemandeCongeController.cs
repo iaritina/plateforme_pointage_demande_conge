@@ -30,33 +30,55 @@ public class DemandeCongeController : Controller
         var demandes = await _demandeCongeService.GetUserDemandesAsync(userId);
         return View(demandes);
     }
-    
+
     public IActionResult Creer()
     {
         return View();
     }
-    
-    /*[HttpPost]
+
+    [HttpPost]
     [ValidateAntiForgeryToken]
     [JwtAuthorize]
-    public async Task<IActionResult> Creer(DemandeCongeCreateViewModel model)
+    public async Task<IActionResult> Creer(DemandeCongeCreateViewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return View(model);
-        var demande = new DemandeConge
+
+        try
         {
-            UserId = int.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-            ),
-            DateDebut = model.DateDebut,
-            DateFin = model.DateFin,
-            Motif = model.Motif,
-            DebutApresMidi = model.DebutApresMidi,
-            FinApresMidi = model.FinApresMidi
-        };
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out var userId))
+                return Unauthorized();
 
-        await _demandeCongeService.CreerDemandeAsync(demande);
+            var demande = new DemandeConge
+            {
+                UserId = userId,
+                DateDebut = model.DateDebut,
+                DateFin = model.DateFin,
+                Motif = model.Motif,
+                DebutApresMidi = model.DebutApresMidi,
+                FinApresMidi = model.FinApresMidi,
+                decisionYear =  model.decisionYear,
+            };
 
-        return RedirectToAction("Index");
-    }*/
+            await _demandeCongeService.CreerDemandeAsync(demande, ct);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (InvalidOperationException ex) // ex: "0 jour ouvré"
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+        catch (ArgumentException ex) // ex: date fin < date début
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(model);
+        }
+        catch (Exception)
+        {
+            // Erreur technique -> message générique
+            ModelState.AddModelError(string.Empty, "Une erreur est survenue. Veuillez réessayer.");
+            return View(model);
+        }
+    }
 }

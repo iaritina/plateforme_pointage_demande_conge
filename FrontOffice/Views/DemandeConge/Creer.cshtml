@@ -217,6 +217,8 @@ ViewData["Title"] = "Nouvelle demande d'absence";
     <form asp-action="Creer" method="post">
         @Html.AntiForgeryToken()
 
+        <div asp-validation-summary="ModelOnly" class="fw-bold text-danger small mb-3"></div>
+
         <label class="section-label">1. Type d'absence</label>
         <div class="absence-types-grid">
             <label class="type-card active">
@@ -264,7 +266,24 @@ ViewData["Title"] = "Nouvelle demande d'absence";
             </label>
         </div>
 
-        <label class="section-label">2. Période de l'absence</label>
+        <label class="section-label">2. Année de décision</label>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label class="input-label">Année</label>
+                <div class="input-group-custom">
+                    <select asp-for="decisionYear" class="form-control-custom">
+                        <option value="">Sélectionnez une année</option>
+                        @for (var y = DateTime.Now.Year - 1; y <= DateTime.Now.Year + 1; y++)
+                        {
+                            <option value="@y">@y</option>
+                        }
+                    </select>
+                    <span asp-validation-for="decisionYear" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <label class="section-label">3. Période de l'absence</label>
         <div class="row">
             <div class="col-md-6 mb-4">
                 <label class="input-label">Date de départ</label>
@@ -299,7 +318,7 @@ ViewData["Title"] = "Nouvelle demande d'absence";
             </div>
         </div>
 
-        <label class="section-label">3. Informations complémentaires</label>
+        <label class="section-label">4. Informations complémentaires</label>
         <div class="mb-4">
             <label class="input-label">Motif de la demande</label>
             <textarea asp-for="Motif" class="form-control-custom textarea-custom" placeholder="Précisez le motif de votre absence..."></textarea>

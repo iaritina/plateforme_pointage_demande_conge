@@ -30,24 +30,31 @@ public class DemandeCongeService
     // VALIDATION (fonctionnalité complexe)
     public async Task<bool> ValiderDemandeAsync(int idDemande)
     {
+        await using var tx = await _context.Database.BeginTransactionAsync();
+
         var demande = await _context.DemandeConges
-            .Include(d => d.User)
             .FirstOrDefaultAsync(d => d.IdDmd == idDemande);
 
-        if (demande == null)
-            return false;
+        if (demande == null) return false;
+
+        // (optionnel) éviter double validation
+        if (demande.Status == StatusEnum.ok) return true;
+
+        var year = demande.decisionYear;
 
         var conge = await _context.SoldeConges
-            .FirstOrDefaultAsync(c => c.IdEmploye == demande.UserId);
+            .FirstOrDefaultAsync(c =>
+                c.IdEmploye == demande.UserId &&
+                c.Year == year); 
 
-        if (conge == null || conge.SoldeRestant < demande.NombreJour)
-            return false;
+        if (conge == null) return false;
+        if (conge.SoldeRestant < demande.NombreJour) return false;
 
-        // Décrémenter solde
         conge.SoldeRestant -= demande.NombreJour;
         demande.Status = StatusEnum.ok;
 
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
         return true;
     }
     

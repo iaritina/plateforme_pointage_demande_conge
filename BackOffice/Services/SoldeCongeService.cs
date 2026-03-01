@@ -59,7 +59,6 @@ public class SoldeCongeService
         {
             IdEmploye = employeeId,
             SoldeRestant = soldeCalcule,
-            Month = DateTime.Now.Month,
             Year = DateTime.Now.Year,
             
         };

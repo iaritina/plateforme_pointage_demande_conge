@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/.idea/.idea.plateforme_pointage_demande_conge/.idea/queries/Query_3.sql" dialect="TSQL" />
     <file url="file://$PROJECT_DIR$/.idea/.idea.plateforme_pointage_demande_conge/.idea/queries/Query_4.sql" dialect="TSQL" />
     <file url="file://$PROJECT_DIR$/BackOffice/index.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/FrontOffice/Repository/DemandeCongeRepository.cs" dialect="TSQL" />
     <file url="file://$PROJECT_DIR$/Shared/index.sql" dialect="TSQL" />
   </component>
 </project>
