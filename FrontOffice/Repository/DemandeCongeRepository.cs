@@ -14,27 +14,50 @@ public class DemandeCongeRepository
         _factory = factory;
     }
 
-    public async Task<List<DemandeConge>> GetByUserIdAsync(int userId, CancellationToken ct = default)
+    public async Task<(List<DemandeConge> Items, int Total)> GetByUserIdAsync(
+        int userId,
+        int page = 1,
+        int pageSize = 20,
+        CancellationToken ct = default)
     {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+        if (pageSize > 100) pageSize = 100;
+
         const string sql = @"
-SELECT IdDmd, UserId, DateDebut, DebutApresMidi,
-       DateFin, FinApresMidi, Motif, NombreJour, decisionYear,Status
+;WITH Base AS (
+    SELECT IdDmd, UserId, DateDebut, DebutApresMidi,
+           DateFin, FinApresMidi, Motif, NombreJour, decisionYear, Status
+    FROM [DemandeConges]
+    WHERE UserId = @UserId
+)
+SELECT *
+FROM Base
+ORDER BY DateDebut DESC
+OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+SELECT COUNT(1)
 FROM [DemandeConges]
-WHERE UserId = @UserId
-ORDER BY DateDebut DESC;";
+WHERE UserId = @UserId;
+";
 
         using var conn = (SqlConnection)_factory.CreateConnection();
         await conn.OpenAsync(ct);
 
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@UserId", userId);
 
-        var result = new List<DemandeConge>();
+        cmd.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = userId;
+        cmd.Parameters.Add("@Offset", System.Data.SqlDbType.Int).Value = (page - 1) * pageSize;
+        cmd.Parameters.Add("@PageSize", System.Data.SqlDbType.Int).Value = pageSize;
+
+        var items = new List<DemandeConge>();
 
         using var reader = await cmd.ExecuteReaderAsync(ct);
+
+        // 1) Page
         while (await reader.ReadAsync(ct))
         {
-            result.Add(new DemandeConge
+            items.Add(new DemandeConge
             {
                 IdDmd = reader.GetInt32(0),
                 UserId = reader.GetInt32(1),
@@ -45,13 +68,17 @@ ORDER BY DateDebut DESC;";
                 Motif = reader.IsDBNull(6) ? null : reader.GetString(6),
                 NombreJour = reader.GetDecimal(7),
                 decisionYear = reader.GetInt32(8),
-                Status = (StatusEnum)reader.GetInt32(9)
+                Status = (StatusEnum)reader.GetInt32(9),
             });
         }
 
-        return result;
-    }
+        // 2) Total
+        int total = 0;
+        if (await reader.NextResultAsync(ct) && await reader.ReadAsync(ct))
+            total = reader.GetInt32(0);
 
+        return (items, total);
+    }
     public async Task<DemandeConge> CreerDemandeAsync(
         DemandeConge demande,
         CancellationToken ct = default)

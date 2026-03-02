@@ -4,6 +4,11 @@
 @{
     ViewData["Title"] = "Mes demandes de congé";
 }
+@{
+    int page = ViewBag.Page ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int pageSize = ViewBag.PageSize ?? 5;
+}
 
 <style>
     .page-header {
@@ -153,77 +158,147 @@
         <div class="table-responsive">
             <table class="table table-custom">
                 <thead>
-                    <tr>
-                        <th>Période</th>
-                        <th>Motif</th>
-                        <th class="text-center">Durée</th>
-                        <th>Statut</th>
-                        <th>Année de décision</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
+                <tr>
+                    <th>Période</th>
+                    <th>Motif</th>
+                    <th class="text-center">Durée</th>
+                    <th>Statut</th>
+                    <th>Année de décision</th>
+                    <th class="text-end">Actions</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var d in Model)
-                    {
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <span class="fw-semibold">@d.DateDebut.ToString("dd MMM yyyy")</span>
-                                    <span class="text-muted small">au @d.DateFin.ToString("dd MMM yyyy")</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="motif-text" title="@d.Motif">
-                                    @d.Motif
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-light text-dark border">@d.NombreJour j</span>
-                            </td>
-                            <td>
-                                @switch (d.Status)
-                                {
-                                    case StatusEnum.pending:
-                                        <div class="status-badge status-pending">
-                                            <span class="status-dot dot-pending"></span>
-                                            En attente
-                                        </div>
-                                        break;
-                                    case StatusEnum.ok:
-                                        <div class="status-badge status-ok">
-                                            <span class="status-dot dot-ok"></span>
-                                            Acceptée
-                                        </div>
-                                        break;
-                                    case StatusEnum.ko:
-                                        <div class="status-badge status-ko">
-                                            <span class="status-dot dot-ko"></span>
-                                            Refusée
-                                        </div>
-                                        break;
-                                }
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-light text-dark border">@d.decisionYear</span>
-                            </td>
-                            <td class="text-end">
-                                <div class="dropdown">
-                                    <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                        <li><a class="dropdown-item small" href="#"><i class="bi bi-eye me-2"></i>Détails</a></li>
-                                        @if(d.Status == StatusEnum.pending)
-                                        {
-                                            <li><a class="dropdown-item small text-danger" href="#"><i class="bi bi-trash me-2"></i>Annuler</a></li>
-                                        }
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                @foreach (var d in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-semibold">@d.DateDebut.ToString("dd MMM yyyy")</span>
+                                <span class="text-muted small">au @d.DateFin.ToString("dd MMM yyyy")</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="motif-text" title="@d.Motif">
+                                @d.Motif
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">@d.NombreJour j</span>
+                        </td>
+                        <td>
+                            @switch (d.Status)
+                            {
+                                case StatusEnum.pending:
+                                    <div class="status-badge status-pending">
+                                        <span class="status-dot dot-pending"></span>
+                                        En attente
+                                    </div>
+                                    break;
+                                case StatusEnum.ok:
+                                    <div class="status-badge status-ok">
+                                        <span class="status-dot dot-ok"></span>
+                                        Acceptée
+                                    </div>
+                                    break;
+                                case StatusEnum.ko:
+                                    <div class="status-badge status-ko">
+                                        <span class="status-dot dot-ko"></span>
+                                        Refusée
+                                    </div>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">@d.decisionYear</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-eye me-2"></i>Détails</a></li>
+                                    @if(d.Status == StatusEnum.pending)
+                                    {
+                                        <li><a class="dropdown-item small text-danger" href="#"><i class="bi bi-trash me-2"></i>Annuler</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>
+
+        @if(totalPages > 1)
+        {
+            <nav class="mt-3 d-flex justify-content-center" aria-label="Pagination">
+                <ul class="pagination pagination-sm mb-0">
+
+                    <!-- Prev -->
+                    <li class="page-item @(page <= 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(page - 1)"
+                           asp-route-pageSize="@pageSize"
+                           aria-label="Précédent">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    @{
+                        // Fenêtre de pages (ex: 1 ... 4 5 6 ... 12)
+                        var start = Math.Max(1, page - 2);
+                        var end = Math.Min(totalPages, page + 2);
+
+                        if (start > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="1"
+                                   asp-route-pageSize="@pageSize">1</a>
+                            </li>
+                            if (start > 2)
+                            {
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            }
+                        }
+
+                        for (int i = start; i <= end; i++)
+                        {
+                            <li class="page-item @(i == page ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i"
+                                   asp-route-pageSize="@pageSize">@i</a>
+                            </li>
+                        }
+
+                        if (end < totalPages)
+                        {
+                            if (end < totalPages - 1)
+                            {
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            }
+
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@totalPages"
+                                   asp-route-pageSize="@pageSize">@totalPages</a>
+                            </li>
+                        }
+                    }
+
+                    <!-- Next -->
+                    <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(page + 1)"
+                           asp-route-pageSize="@pageSize"
+                           aria-label="Suivant">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        }
     }
 </div>

@@ -12,9 +12,13 @@ public class DemandeCongeService
         _demandeCongeRepository = demandeCongeRepository;
     }
     
-    public Task<List<DemandeConge>> GetUserDemandesAsync(int userId, CancellationToken ct = default)
+    public Task<(List<DemandeConge> Items, int Total)> GetUserDemandesAsync(
+        int userId,
+        int page = 1,
+        int pageSize = 20,
+        CancellationToken ct = default)
     {
-        return _demandeCongeRepository.GetByUserIdAsync(userId, ct);
+        return _demandeCongeRepository.GetByUserIdAsync(userId, page, pageSize, ct);
     }
     
     public async Task<DemandeConge> CreerDemandeAsync(DemandeConge demande, CancellationToken ct = default)

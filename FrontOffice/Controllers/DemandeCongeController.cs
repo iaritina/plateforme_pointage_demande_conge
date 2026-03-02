@@ -19,18 +19,22 @@ public class DemandeCongeController : Controller
         _demandeCongeService = demandeCongeService;
     }
 
-    // GET
+// GET
     [JwtAuthorize]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 5, CancellationToken ct = default)
     {
-        int userId = int.Parse(
-            User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-        );
+        int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var demandes = await _demandeCongeService.GetUserDemandesAsync(userId);
-        return View(demandes);
+        // Si ton service retourne (Items, Total)
+        var (items, total) = await _demandeCongeService.GetUserDemandesAsync(userId, page, pageSize, ct);
+
+        ViewBag.Page = page;
+        ViewBag.PageSize = pageSize;
+        ViewBag.Total = total;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+
+        return View(items);
     }
-
     public IActionResult Creer()
     {
         return View();
