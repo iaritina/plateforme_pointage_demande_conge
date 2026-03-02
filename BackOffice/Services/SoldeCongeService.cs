@@ -53,7 +53,7 @@ public class SoldeCongeService
         if (user == null)
             throw new Exception("Employé introuvable");
 
-        var soldeCalcule = CalculerSoldeConge(user.HiringDate);
+        var soldeCalcule = 20;
 
         var solde = new SoldeConge
         {
@@ -65,27 +65,6 @@ public class SoldeCongeService
 
         _context.SoldeConges.Add(solde);
         await _context.SaveChangesAsync();
-    }
-
-    
-    private decimal CalculerSoldeConge(DateTime hiringDate)
-    {
-        var today = DateTime.Today;
-
-        int months =
-            (today.Year - hiringDate.Year) * 12
-            + today.Month - hiringDate.Month;
-
-        // Si le mois en cours n'est pas complet
-        if (today.Day < hiringDate.Day)
-        {
-            months--;
-        }
-
-        if (months < 0)
-            months = 0;
-
-        return months * 2.5m;
     }
 
 
