@@ -134,13 +134,20 @@
 <div class="page-header d-flex justify-content-between align-items-center">
     <div>
         <h2 class="fw-bold mb-1">Mes demandes de congé</h2>
-        <p class="text-muted small mb-0">Consultez et gérez l'historique de vos absences.</p>
+        <p class="text-muted small mb-0">Consultez et gérez l\'historique de vos absences.</p>
     </div>
+    
+    <div class="d-flex gap-2">
+        <a asp-action="ExportPdf" class="btn-create text-decoration-none">
+            <i class="bi bi-file-earmark-pdf"></i>
+            Export PDF
+        </a>
 
-    <a asp-action="Creer" class="btn-create text-decoration-none">
-        <i class="bi bi-plus-lg"></i>
-        Nouvelle demande
-    </a>
+        <a asp-action="Creer" class="btn-create text-decoration-none">
+            <i class="bi bi-plus-lg"></i>
+            Nouvelle demande
+        </a>
+    </div>
 </div>
 
 <div class="card-custom">
@@ -149,7 +156,7 @@
         <div class="empty-state">
             <i class="bi bi-calendar-x"></i>
             <h5 class="text-dark">Aucune demande trouvée</h5>
-            <p class="text-muted">Vous n'avez pas encore soumis de demande de congé.</p>
+            <p class="text-muted">Vous n\'avez pas encore soumis de demande de congé.</p>
             <a asp-action="Creer" class="btn btn-outline-primary btn-sm mt-2">Créer ma première demande</a>
         </div>
     }
