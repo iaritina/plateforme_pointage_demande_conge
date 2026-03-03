@@ -9,7 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Context;
 
+using QuestPDF.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
+QuestPDF.Settings.EnableDebugging = true;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

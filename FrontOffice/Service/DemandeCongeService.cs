@@ -93,4 +93,16 @@ public class DemandeCongeService
 
         return total;
     }
+    
+    public async Task<List<DemandeConge>> GetUserDemandesAllAsync(
+        int userId,
+        CancellationToken ct = default)
+    {
+        // ✅ Option A (recommandée) : appelle une méthode repo dédiée
+        return await _demandeCongeRepository.GetAllByUserIdAsync(userId, ct);
+
+        // ⚡ Option B (fallback) : si tu ne veux pas toucher au repo tout de suite :
+        // var (items, total) = await _demandeCongeRepository.GetByUserIdAsync(userId, 1, 10000, ct);
+        // return items;
+    }
 }

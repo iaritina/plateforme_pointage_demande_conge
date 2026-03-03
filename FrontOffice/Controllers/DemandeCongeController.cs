@@ -3,6 +3,7 @@ using FrontOffice.Auth;
 using FrontOffice.Service;
 using FrontOffice.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
 using Shared.models;
 
 namespace FrontOffice.Controllers;
@@ -14,6 +15,7 @@ public class DemandeCongeController : Controller
 
     public DemandeCongeController(ILogger<DemandeCongeController> logger,
         DemandeCongeService demandeCongeService)
+        
     {
         _logger = logger;
         _demandeCongeService = demandeCongeService;
@@ -84,5 +86,22 @@ public class DemandeCongeController : Controller
             ModelState.AddModelError(string.Empty, "Une erreur est survenue. Veuillez réessayer.");
             return View(model);
         }
+    }
+    
+    [HttpGet]
+    [JwtAuthorize]
+    public async Task<IActionResult> ExportPdf(CancellationToken ct = default)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdStr, out var userId))
+            return Unauthorized();
+
+        var items = await _demandeCongeService.GetUserDemandesAllAsync(userId, ct);
+        items ??= new List<DemandeConge>();
+
+        var pdfBytes = new DemandeCongePdf(items).GeneratePdf();
+
+        var fileName = $"demandes-conge_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
+        return File(pdfBytes, "application/pdf", fileName);
     }
 }
