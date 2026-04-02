@@ -9,12 +9,12 @@ namespace BackOffice.Controllers;
 public class UserController : Controller
 {
     private readonly UserService _service;
-    
-    public  UserController(UserService service)
+
+    public UserController(UserService service)
     {
         _service = service;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -70,7 +70,7 @@ public class UserController : Controller
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
 
             var createdUser = await _service.CreateUser(user);
             return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id }, createdUser);
@@ -129,8 +129,105 @@ public class UserController : Controller
                 message = $"Erreur lors de l'import : {ex.Message}"
             });
         }
+    }
+    
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            var updatedUser = await _service.UpdateUser(id, user);
 
-}
+            if (updatedUser == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Utilisateur introuvable"
+                });
+            }
 
+            return Ok(new
+            {
+                success = true,
+                message = "Utilisateur modifié avec succès",
+                data = updatedUser
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = $"Erreur lors de la modification : {ex.Message}"
+            });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        try
+        {
+            var deleted = await _service.DeleteUser(id);
+
+            if (!deleted)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Utilisateur introuvable"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = "Utilisateur supprimé avec succès"
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = $"Erreur lors de la suppression : {ex.Message}"
+            });
+        }
+    }
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        try
+        {
+            var user = await _service.GetUserByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Utilisateur introuvable"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = user
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = $"Erreur lors de la récupération de l'utilisateur : {ex.Message}"
+            });
+        }
+    }
 }

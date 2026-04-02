@@ -74,4 +74,43 @@ public class UserService
         return user;
     }
 
+    public async Task<User> UpdateUser(int id, User updatedUser)
+    {
+        var existingUser = await _context.Users.FindAsync(id);
+        
+        if (existingUser == null)
+            return null;
+
+        existingUser.FirstName = updatedUser.FirstName;
+        existingUser.LastName = updatedUser.LastName;
+        existingUser.Email = updatedUser.Email;
+        existingUser.Phone = updatedUser.Phone;
+        existingUser.HiringDate = updatedUser.HiringDate == default
+            ? existingUser.HiringDate
+            : updatedUser.HiringDate;
+        existingUser.Role = string.IsNullOrWhiteSpace(updatedUser.Role)
+            ? existingUser.Role
+            : updatedUser.Role;
+
+        await _context.SaveChangesAsync();
+        return existingUser;
+    }
+    
+    public async Task<bool> DeleteUser(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+
+        if (user == null)
+            return false;
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    
+    public async Task<User?> GetUserByIdAsync(int id)
+    {
+        return await _context.Users.FindAsync(id);
+    }
+
 }
