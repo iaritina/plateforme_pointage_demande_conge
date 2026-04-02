@@ -34,8 +34,11 @@ public class WorkSummaryService
             double totalWorkPlanned = 0;
             double totalBreakPlanned = 0;
 
-            // Créneaux de congés par utilisateur
-            var leaveSlots = BuildLeaveSlots(leaves.Where(l => l.UserId == user.Id).ToList(), startDate, endDate);
+            var leaveSlots = BuildLeaveSlots(
+                leaves.Where(l => l.UserId == user.Id).ToList(),
+                startDate.Date,
+                endDate.Date
+            );
 
             for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
@@ -60,10 +63,10 @@ public class WorkSummaryService
                     {
                         if (s.Working)
                         {
-                            // Réduire le travail si congé
                             double morningReduction = leave.Morning && slotStartMinutes < 12 * 60
                                 ? Math.Min(slotEndMinutes, 12 * 60) - slotStartMinutes
                                 : 0;
+
                             double afternoonReduction = leave.Afternoon && slotEndMinutes > 12 * 60
                                 ? slotEndMinutes - Math.Max(slotStartMinutes, 12 * 60)
                                 : 0;
@@ -73,13 +76,11 @@ public class WorkSummaryService
                         }
                         else
                         {
-                            // Pause annulée si congé
                             pause = 0;
                         }
                     }
                     else if (!s.Working && slotStartMinutes == 0 && (slotEndMinutes == 1439 || slotEndMinutes == 1440))
                     {
-                        // Jour non travaillé (week-end ou off) => pause = 0
                         pause = 0;
                     }
 
@@ -131,7 +132,6 @@ public class WorkSummaryService
         return results;
     }
 
-
     public async Task<WorkSummaryViewModel?> GetUserWorkSummary(
         int userId,
         DateTime? startDate = null,
@@ -141,8 +141,8 @@ public class WorkSummaryService
         if (user == null) return null;
 
         DateTime today = DateTime.Today;
-        DateTime start = startDate ?? today.AddDays(-2);
-        DateTime end = endDate ?? today;
+        DateTime start = (startDate ?? today.AddDays(-2)).Date;
+        DateTime end = (endDate ?? today).Date;
 
         var schedules = await _context.Schedules
             .Where(s => s.UserId == user.Id)
@@ -156,7 +156,6 @@ public class WorkSummaryService
             .OrderBy(r => r.Timestamp)
             .ToListAsync();
 
-        // 🔹 Congés validés
         var leaves = await _context.DemandeConges
             .Where(c =>
                 c.UserId == userId &&
@@ -179,7 +178,6 @@ public class WorkSummaryService
         {
             int dayNum = date.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)date.DayOfWeek;
 
-            // 🔹 Planning
             var daySchedules = schedules.Where(s => s.Day == dayNum).ToList();
             double dayPlannedWork = 0;
             double dayPlannedBreak = 0;
@@ -201,10 +199,10 @@ public class WorkSummaryService
                 {
                     if (s.Working)
                     {
-                        // 🔹 Réduire le temps de travail en fonction du congé
                         double morningReduction = leave.Morning && slotStartMinutes < 12 * 60
                             ? Math.Min(slotEndMinutes, 12 * 60) - slotStartMinutes
                             : 0;
+
                         double afternoonReduction = leave.Afternoon && slotEndMinutes > 12 * 60
                             ? slotEndMinutes - Math.Max(slotStartMinutes, 12 * 60)
                             : 0;
@@ -214,13 +212,11 @@ public class WorkSummaryService
                     }
                     else
                     {
-                        // 🔹 Créneau de pause annulé si congé ou jour non travaillé
                         breakMinutes = 0;
                     }
                 }
                 else if (!s.Working && slotStartMinutes == 0 && (slotEndMinutes == 1439 || slotEndMinutes == 1440))
                 {
-                    // 🔹 Jour non travaillé (week-end ou off) => pause = 0
                     breakMinutes = 0;
                 }
 
@@ -245,7 +241,6 @@ public class WorkSummaryService
                 TimeSlots = timeSlotsVM
             });
 
-            // 🔹 Pointages
             var dayRegistrations = registrations
                 .Where(r => r.Timestamp.Date == date)
                 .ToList();
@@ -314,7 +309,7 @@ public class WorkSummaryService
             Leaves = leaveSlots
         };
     }
-    
+
     private List<LeaveSlotViewModel> BuildLeaveSlots(
         List<DemandeConge> leaves,
         DateTime start,
@@ -324,9 +319,13 @@ public class WorkSummaryService
 
         foreach (var leave in leaves)
         {
-            for (var d = leave.DateDebut.Date; d <= leave.DateFin.Date; d = d.AddDays(1))
+            var leaveStart = leave.DateDebut.Date;
+            var leaveEnd = leave.DateFin.Date;
+
+            for (var d = leaveStart; d <= leaveEnd; d = d.AddDays(1))
             {
-                if (d < start || d > end) continue;
+                if (d < start.Date || d > end.Date)
+                    continue;
 
                 if (!result.ContainsKey(d))
                 {
@@ -338,34 +337,68 @@ public class WorkSummaryService
                     };
                 }
 
-                if (d == leave.DateDebut.Date)
+                bool isSameDay = leaveStart == leaveEnd;
+                bool isStartDay = d == leaveStart;
+                bool isEndDay = d == leaveEnd;
+
+                if (isSameDay)
+                {
+                    if (!leave.DebutApresMidi && leave.FinApresMidi)
+                    {
+                        result[d].Morning = true;
+                        result[d].Afternoon = true;
+                    }
+                    else if (!leave.DebutApresMidi && !leave.FinApresMidi)
+                    {
+                        result[d].Morning = true;
+                    }
+                    else if (leave.DebutApresMidi && leave.FinApresMidi)
+                    {
+                        result[d].Afternoon = true;
+                    }
+                }
+                else if (isStartDay)
                 {
                     if (!leave.DebutApresMidi)
+                    {
                         result[d].Morning = true;
-
-                    result[d].Afternoon = true;
-                }
-                else if (d == leave.DateFin.Date)
-                {
-                    result[d].Morning = true;
-
-                    if (leave.FinApresMidi)
                         result[d].Afternoon = true;
+                    }
+                    else
+                    {
+                        result[d].Afternoon = true;
+                    }
+                }
+                else if (isEndDay)
+                {
+                    if (leave.FinApresMidi)
+                    {
+                        result[d].Morning = true;
+                        result[d].Afternoon = true;
+                    }
+                    else
+                    {
+                        // Retour le matin => pas de congé ce jour-là
+                        result[d].Morning = false;
+                        result[d].Afternoon = false;
+                    }
                 }
                 else
                 {
                     result[d].Morning = true;
                     result[d].Afternoon = true;
                 }
+
+                if (!result[d].Morning && !result[d].Afternoon)
+                {
+                    result.Remove(d);
+                }
             }
         }
 
-        return result.Values.ToList();
+        return result.Values.OrderBy(x => x.Date).ToList();
     }
 
-
-    
-    
     private string GetDayLabel(int day)
     {
         return day switch
@@ -380,6 +413,4 @@ public class WorkSummaryService
             _ => ""
         };
     }
-    
-    
 }
