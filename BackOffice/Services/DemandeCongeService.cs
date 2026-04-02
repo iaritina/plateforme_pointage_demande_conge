@@ -103,11 +103,11 @@ public class DemandeCongeService
         // Parcourir de la date de départ à la date de retour
         for (var date = d.DateDebut.Date; date <= d.DateFin.Date; date = date.AddDays(1))
         {
-            // Ignorer weekends
+            
             if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                 continue;
 
-            // CAS 1 : Même jour (départ et retour le même jour)
+            // premier cas, meme jour
             if (d.DateDebut.Date == d.DateFin.Date)
             {
                 if (!d.DebutApresMidi && !d.FinApresMidi)
@@ -122,8 +122,7 @@ public class DemandeCongeService
                 return 0m;
             }
 
-            // CAS 2 : Plusieurs jours
-            // Premier jour (jour de départ)
+            // 2e cas jour different, premier jour (jour de départ)
             if (date == d.DateDebut.Date)
             {
                 total += d.DebutApresMidi ? 0.5m : 1m;

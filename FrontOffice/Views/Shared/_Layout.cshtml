@@ -177,6 +177,19 @@
                 margin-left: 0;
             }
         }
+
+        .dropdown-menu {
+            min-width: 220px;
+            border-radius: 12px;
+        }
+
+        .dropdown-item {
+            padding: 0.7rem 1rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+        }
     </style>
 </head>
 <body>
@@ -259,14 +272,35 @@
                 
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
-                    <div class="user-profile">
-                        <div class="text-end d-none d-sm-block">
-                            <div class="fw-bold small">@User.Identity.Name</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">Collaborateur</div>
+                    <div class="dropdown">
+                        <div class="user-profile"
+                             role="button"
+                             data-bs-toggle="dropdown"
+                             aria-expanded="false">
+                            <div class="text-end d-none d-sm-block">
+                                <div class="fw-bold small">@User.Identity.Name</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Collaborateur</div>
+                            </div>
+                            <div class="user-avatar">
+                                @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                            </div>
                         </div>
-                        <div class="user-avatar">
-                            @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
-                        </div>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <li class="px-3 py-2">
+                                <div class="fw-semibold">@User.Identity.Name</div>
+                                <div class="text-muted small">Collaborateur</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="FrontAuth" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        Déconnexion
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 }
             </div>
